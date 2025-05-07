@@ -1,0 +1,69 @@
+version: "3.8"
+
+services:
+  mongo:
+    image: mongo:6.0
+    container_name: mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - gomicro-net
+
+  api-gateway:
+    build: ./api-gateway
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - order-service
+      - inventory-service
+      - user-service
+    networks:
+      - gomicro-net
+
+  order-service:
+    build: ./order-service
+    container_name: order-service
+    depends_on:
+      - mongo
+    networks:
+      - gomicro-net
+
+  inventory-service:
+    build: ./inventory-service
+    container_name: inventory-service
+    depends_on:
+      - mongo
+    networks:
+      - gomicro-net
+
+  user-service:
+    build: ./user-service
+    container_name: user-service
+    depends_on:
+      - mongo
+    networks:
+      - gomicro-net
+
+
+
+  nats:
+    image: nats:2.10-alpine
+    container_name: nats-server
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+    restart: unless-stopped
+    networks:
+      - gomicro-net
+
+
+volumes:
+  mongo_data:
+
+networks:
+  gomicro-net:
+    driver: bridge

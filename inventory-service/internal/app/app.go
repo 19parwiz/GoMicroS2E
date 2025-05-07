@@ -23,7 +23,7 @@ type App struct {
 }
 
 func New(ctx context.Context, cfg *config.Config) (*App, error) {
-	log.Printf(fmt.Sprintf("Initializing %s service...", serviceName))
+	log.Printf(fmt.Sprintf("Initializing %s service!", serviceName))
 
 	log.Println("Connecting to DB:", cfg.Mongo.Database)
 	mongoDB, err := mongoConn.NewDB(ctx, cfg.Mongo)
@@ -53,7 +53,7 @@ func (app *App) Start() error {
 	//app.httpServer.Run(errCh)
 	app.grpcServer.Run(errCh)
 
-	log.Printf(fmt.Sprintf("Starting %s service...", serviceName))
+	log.Printf(fmt.Sprintf("Starting %s service!", serviceName))
 
 	shutdownCh := make(chan os.Signal, 1)
 	signal.Notify(shutdownCh, syscall.SIGINT, syscall.SIGTERM)
@@ -63,7 +63,7 @@ func (app *App) Start() error {
 		return errRun
 	case sig := <-shutdownCh:
 
-		log.Printf(fmt.Sprintf("Received %v signal, shutting down...", sig))
+		log.Printf(fmt.Sprintf("Received %v signal, shutting down!", sig))
 		app.Stop()
 		log.Println("graceful shutdown completed!")
 	}

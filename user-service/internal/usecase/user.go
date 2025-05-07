@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"github.com/19parwiz/user/internal/domain"
+	"log"
 )
 
 type UserUsecase struct {
@@ -58,6 +59,7 @@ func (uc UserUsecase) Authenticate(ctx context.Context, req domain.User) (domain
 	if err != nil {
 		return domain.User{}, err
 	}
+	log.Println("Checking user ", req)
 
 	if existingUser == (domain.User{}) {
 		return domain.User{}, domain.ErrUserNotFound

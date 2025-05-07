@@ -33,6 +33,7 @@ func NewServer(cfg config.Config, handler *handler.Handler) *Server {
 	api.GET("/users/profile", middleware.AuthMiddleware(handler.Clients.User), handler.GetUserProfile)
 
 	protected := api.Group("/")
+	log.Println("users client: ", handler.Clients.User)
 	protected.Use(middleware.AuthMiddleware(handler.Clients.User))
 	{
 		protected.POST("/products", handler.CreateProduct)
@@ -59,7 +60,7 @@ func NewServer(cfg config.Config, handler *handler.Handler) *Server {
 
 func (s *Server) Run(errCh chan<- error) {
 	go func() {
-		log.Printf("HTTP server running on: %v", s.httpServer.Addr)
+		log.Printf("The HTTP server running on: %v", s.httpServer.Addr)
 		if err := s.httpServer.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			errCh <- fmt.Errorf("failed to run HTTP server: %w", err)
 		}
@@ -81,7 +82,7 @@ func (s *Server) Stop() error {
 		log.Println("HTTP server shutting  error:", err)
 		return err
 	}
-	log.Println("HTTP server stopped successfully")
+	log.Println("HTTP server stopped successfully! Thanks a lot ")
 
 	return nil
 }

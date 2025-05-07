@@ -21,6 +21,7 @@ func NewClients(cfg *config.Config) (*Clients, error) {
 
 	// User Service Client
 	userTarget := fmt.Sprintf("%s:%d", cfg.Services.UserService.Host, cfg.Services.UserService.Port)
+	log.Println("Checking user client ", userTarget)
 	userConn, err := grpc.NewClient(
 		userTarget,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),

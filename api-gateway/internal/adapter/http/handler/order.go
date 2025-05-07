@@ -9,24 +9,50 @@ import (
 	"strconv"
 )
 
+type Items struct {
+	ProductID int     `json:"product_id"`
+	Name      string  `json:"name"`
+	Price     float64 `json:"price"`
+	Quantity  int     `json:"quantity"`
+}
+
+type Order struct {
+	Id     string  `json:"id"`
+	Status string  `json:"status"`
+	Items  []Items `json:"items"`
+}
+
 func (h *Handler) CreateOrder(c *gin.Context) {
 	userID, exists := c.Get("user_id")
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "user not authenticated"})
 		return
 	}
+	log.Println("user_id: ", userID)
 
-	var items []*protos.OrderItem
-	if err := c.ShouldBindJSON(&items); err != nil {
+	var order Order
+	if err := c.ShouldBindJSON(&order); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
 		log.Println(err)
 		return
+	}
+	items := make([]*protos.OrderItem, len(order.Items))
+	for i, item := range order.Items {
+
+		items[i] = &protos.OrderItem{
+			ProductId: uint64(item.ProductID),
+			Name:      item.Name,
+			Price:     item.Price,
+			Quantity:  uint64(item.Quantity),
+		}
 	}
 
 	req := &protos.CreateOrderRequest{
 		UserId: userID.(uint64),
 		Items:  items,
 	}
+
+	log.Printf("Create Order: %v", req)
 
 	resp, err := h.Clients.Order.CreateOrder(c.Request.Context(), req)
 	if err != nil {

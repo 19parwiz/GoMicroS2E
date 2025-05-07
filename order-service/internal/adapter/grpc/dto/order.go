@@ -158,4 +158,5 @@ func FromListOrdersRequestProto(req *order.ListOrdersRequest) *ListOrdersRequest
 		Page:   req.Page,
 		Limit:  req.Limit,
 	}
+
 }

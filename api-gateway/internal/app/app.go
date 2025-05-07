@@ -21,7 +21,7 @@ type App struct {
 	httpServer  *http.Server
 }
 
-func New(ctx context.Context, cfg *config.Config) (*App, error) {
+func New(_ context.Context, cfg *config.Config) (*App, error) {
 	log.Printf("Initializing %s service...", ServiceName)
 
 	grpcClients, err := grpc.NewClients(cfg)
@@ -46,7 +46,7 @@ func (app *App) Start() error {
 
 	app.httpServer.Run(errCh)
 
-	log.Printf("Starting %s service...", ServiceName)
+	log.Printf("Starting %s service", ServiceName)
 
 	shutdownCh := make(chan os.Signal, 1)
 	signal.Notify(shutdownCh, syscall.SIGINT, syscall.SIGTERM)
@@ -55,9 +55,9 @@ func (app *App) Start() error {
 	case errRun := <-errCh:
 		return errRun
 	case sig := <-shutdownCh:
-		log.Printf("Received %v signal, shutting down...", sig)
+		log.Printf("Received %v signal, shutting down!", sig)
 		app.Stop()
-		log.Println("Graceful shutdown completed!  thanks for shutting down...")
+		log.Println("Graceful shutdown completed!  thanks for shutting down!")
 	}
 	return nil
 }

@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"log"
 )
 
 func AuthMiddleware(userClient proto.AuthClient) gin.HandlerFunc {
@@ -25,6 +26,7 @@ func AuthMiddleware(userClient proto.AuthClient) gin.HandlerFunc {
 
 		authResp, err := userClient.AuthenticateUser(c.Request.Context(), authReq)
 		if err != nil {
+			log.Printf("error in auth middleware %v\n", err)
 			st, ok := status.FromError(err)
 			if ok && st.Code() == codes.Unauthenticated {
 				c.JSON(401, gin.H{"error": "authentication failed"})
